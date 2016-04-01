@@ -30,3 +30,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     supports_timezones = False
     supports_transactions = True
     uses_savepoints = True
+
+
+class DSVFeatures(DatabaseFeatures):
+    uses_savepoints = False

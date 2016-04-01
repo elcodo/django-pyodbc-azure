@@ -199,8 +199,15 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                 if sql.startswith('LIKE '):
                     ops[op] = '%s COLLATE %s' % (sql, collation)
             self.operators.update(ops)
-
-        self.features = DatabaseFeatures(self)
+        try:
+            features_options = settings.DATABASES['default']['options']['features']
+            if not isinstance(features_options, DatabaseFeatures):
+                raise Exception(
+                    "Provided features options class: {} is not deriving from DatabaseFeatures".format(features_options)
+                )
+            self.features = features_options(self)
+        except KeyError:
+            raise Exception("Provide features class in settings.DATABASES in options['features'] section")
         self.ops = DatabaseOperations(self)
         self.client = DatabaseClient(self)
         self.creation = DatabaseCreation(self)
